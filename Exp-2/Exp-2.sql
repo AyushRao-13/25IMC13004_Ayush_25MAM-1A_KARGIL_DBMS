@@ -1,50 +1,59 @@
-CREATE TABLE customer_orders (
-    order_id SERIAL PRIMARY KEY,
-    customer_name VARCHAR(50) NOT NULL,
-    product VARCHAR(50) NOT NULL,
-    quantity INT CHECK (quantity > 0),
-    price NUMERIC(10,2) CHECK (price > 0),
-    order_date DATE NOT NULL
+---customer name, product, quantity, price, and order date.
+
+create table customer_orders(
+order_id serial primary key,
+customer_name varchar(20),
+product varchar(20),
+quantity int,
+price numeric(10,2),
+order_date date
 );
 
--- Filtering Data Using Conditions
-SELECT * 
-FROM customer_orders
-WHERE price > 30000;
+insert into customer_orders(customer_name,product,quantity,price,order_date) values
+('Amit', 'Laptop', 1, 55000, '2025-01-05'),
+('Amit', 'Mouse', 2, 800, '2025-01-06'),
+('Riya', 'Mobile', 1, 22000, '2025-01-10'),
+('Riya', 'Headphones', 1, 2000, '2025-01-10'),
+('Karan', 'Laptop', 1, 60000, '2025-02-02'),
+('Karan', 'Keyboard', 1, 1500, '2025-02-05'),
+('Neha', 'Mobile', 2, 21000, '2025-02-15'),
+('Neha', 'Charger', 3, 900, '2025-02-18');
 
-SELECT * 
-FROM customer_orders
-WHERE product = 'Laptop';
+select*from customer_orders;
 
--- Sorting Query Results (ORDER BY)
--- Sort orders by price (ascending)
-SELECT customer_name, product, price
-FROM customer_orders
-ORDER BY price ASC;
--- Sort using multiple attributes (date priority, then price)
-SELECT customer_name, product, price, order_date
-FROM customer_orders
-ORDER BY order_date ASC, price DESC;
+--Filtering Data Using Conditions Show only those customer who purcahse 20000 above show customer name 
+--and product and quantity and price
 
--- Grouping Data for Aggregation
--- Total sales per product
-SELECT product, SUM(quantity * price) AS total_sales
-FROM customer_orders
-GROUP BY product;
--- Total quantity sold per product
-SELECT product, SUM(quantity) AS total_quantity
-FROM customer_orders
-GROUP BY product;
+select order_id,customer_name,product,quantity,price
+from customer_orders where price>20000;
 
---Applying Conditions on Aggregated Data
--- Products with total sales greater than 50,000
-SELECT product, SUM(quantity * price) AS total_sales
-FROM customer_orders
-GROUP BY product
-HAVING SUM(quantity * price) a> 50000;
 
--- Custome whose total purchase exceeds 60,000
-SELECT customer_name, SUM(quantity * price) AS total_spent
-FROM customer_orders
-GROUP BY customer_name
-HAVING SUM(quantity * price) > 60000;
+---Sorting Query Results
+--ascending
+select order_id,customer_name,product,quantity,price
+from customer_orders where price>20000 order by price ;
+
+--descending
+select order_id,customer_name,product,quantity,price
+from customer_orders where price>20000 order by price desc;
+
+--Grouping Data for Aggregation
+select product ,count(*)as total_product_sale
+from customer_orders
+group by product;
+
+
+--Step 5: Applying Conditions on Aggregated Data
+select product,
+sum(quantity*price) as total_revenue
+from customer_orders
+group by product
+having sum(quantity*price) > 50000;
+
+
+--step6
+select product, sum(quantity*price) as total_revenue
+from customer_orders
+where order_date >= '2025-01-01'
+group by product
+having sum(quantity*price) > 50000;

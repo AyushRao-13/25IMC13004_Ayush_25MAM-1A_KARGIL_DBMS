@@ -1,58 +1,74 @@
-CREATE TABLE Department (
-    dept_id INT PRIMARY KEY,
-    dept_name VARCHAR(50) NOT NULL UNIQUE,
-    location VARCHAR(50)
+
+create table Department(
+Dept_id int primary key,
+Dept_name varchar(20) not null unique
 );
 
-CREATE TABLE Employee (
-    emp_id INT PRIMARY KEY,
-    emp_name VARCHAR(50) NOT NULL,
-    salary INT CHECK (salary > 0),
-    dept_id INT,
-    CONSTRAINT fk_dept
-        FOREIGN KEY (dept_id)
-        REFERENCES Department(dept_id)
-        ON DELETE SET NULL
+create table Employee(
+Emp_id int primary key ,
+Emp_name varchar(20)not null,
+Emp_email varchar(20) unique not null,
+Emp_phone varchar(20) unique not null,
+Dept_id int ,
+foreign key (Dept_id)references Department(Dept_id)
 );
 
-CREATE TABLE Project (
-    project_id INT PRIMARY KEY,
-    project_name VARCHAR(50) NOT NULL,
-    dept_id INT NOT NULL,
-    CONSTRAINT fk_project_dept
-        FOREIGN KEY (dept_id)
-        REFERENCES Department(dept_id)
+create table Project(
+Proj_id integer primary key,
+Proj_name varchar(20) not null,
+Proj_startDate varchar(20) not null,
+Proj_EndDate varchar(20) not null,
+Proj_Assign_Emp int,
+foreign key (Proj_Assign_Emp) references Employee(Emp_id)
 );
 
-INSERT INTO Department VALUES (1, 'HR', 'Delhi');
-INSERT INTO Department VALUES (2, 'IT', 'Bangalore');
-INSERT INTO Department VALUES (3, 'Finance', 'Mumbai');
+insert into Department (Dept_id,Dept_name)
+values
+(1, 'Human Resources'),
+(2, 'Engineering'),
+(3, 'Marketing'),
+(4, 'Finance');
 
-INSERT INTO Employee VALUES (101, 'Amit', 50000, 2);
-INSERT INTO Employee VALUES (102, 'Riya', 45000, 1);
-INSERT INTO Employee VALUES (103, 'Karan', 60000, 2);
+insert into Employee (Emp_id,Emp_name,Emp_email,Emp_phone,Dept_id)
+values
+(101, 'Amit Sharma', 'amit@gmail.com', '9876543210', 2),
+(102, 'Neha Verma', 'neha@gmail.com', '9123456780', 2),
+(103, 'Rohit Singh', 'rohit@gmail.com', '9988776655', 1),
+(104, 'Priya Mehta', 'priya@gmail.com', '9090909090', 3),
+(105, 'Ram Sen', 'Ram@gmail.com', '555555555', 4);
 
-INSERT INTO Project VALUES (201, 'Payroll System', 1);
-INSERT INTO Project VALUES (202, 'Website Upgrade', 2);
+insert into Project(Proj_id, Proj_name, Proj_startDate, Proj_EndDate, Proj_Assign_Emp)
+values
+(1, 'AI Chatbot', '2026-01-01', '2026-06-30', 101),
+(2, 'E-Commerce App', '2026-02-01', '2026-07-31', 102),
+(3, 'HR Portal', '2026-03-15', '2026-05-30', 103),
+(4, 'Marketing Website', '2026-01-20', '2026-04-20', 104);
+(5, 'Finance Website', '2025-01-20', '2026-04-20', 105);
 
-UPDATE Employee
-SET salary = 55000
-WHERE emp_id = 101;
 
-DELETE FROM Department
-WHERE dept_id = 3;
+-- update Employee 103 Department id
+update Employee set Dept_id=4 where Emp_id=103;
 
-CREATE ROLE reporting_staff LOGIN PASSWORD 'reportS1';
+--delete Employee Data 
+-- But the problem is, I assign project to employee .First, i need to delete or update project .Then I  delete employee
+delete from Project where Proj_Assign_Emp=105;
+delete from Employee where Emp_id=105;
 
-GRANT SELECT ON Department TO reporting_staff;
-GRANT SELECT ON Employee TO reporting_staff;
-GRANT SELECT ON Project TO reporting_staff;
+select*from Department;
 
-REVOKE CREATE ON SCHEMA public FROM reporting_staff;
+select*from Employee;
 
-ALTER TABLE Employee
-ADD email VARCHAR(50);
+select*from Project;
 
-DROP TABLE Project;
 
-SELECT * FROM employee;
+create role HOD login password 'HOD';
+grant select on Employee,Department,Project to HOD;
+grant create on schema public to HOD;
+revoke select on Department from HOD;
+revoke create on schema public from HOD;
+
+
+--alter table Employee Address
+alter table Employee add Address varchar(30);
+
+drop table Employee;
